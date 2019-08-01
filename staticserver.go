@@ -26,11 +26,11 @@ const (
 
 )
 
-const(
-	GB int = 1 << (iota*10)
-	MB int = 1 << (iota*10)
-	KB int = 1 << (iota*10)
-)
+//const(
+//	GB int = 1 << (iota*10)
+//	MB int = 1 << (iota*10)
+//	KB int = 1 << (iota*10)
+//)
 func main() {
 	server := http.Server{
 		Addr:        SERVERPORT,
@@ -42,11 +42,11 @@ func main() {
 	mux["/upload"] = upload
 	mux["/file"] = StaticServer
 
-	fmt.Println("GB",GB)
-	fmt.Println("MB",MB)
-	fmt.Println("KB",KB)
+	//fmt.Println("GB",GB)
+	//fmt.Println("MB",MB)
+	//fmt.Println("KB",KB)
 
-	fmt.Println("Create Server Port:",server.Addr)
+	fmt.Println("Create Server Port",server.Addr)
 
 	err :=server.ListenAndServe()
 
@@ -54,7 +54,7 @@ func main() {
 		fmt.Println("Create Server Error:",err.Error())
 	}
 
-
+    fmt.Println(32 << 20)
 	//fmt.Println(time.Now().Unix())
 	//
 	//h := md5.New()
@@ -97,7 +97,11 @@ func upload(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		filename := strconv.FormatInt(time.Now().Unix(), 10) + fileext
-		f, _ := os.OpenFile(UPLOADFILE+filename, os.O_CREATE|os.O_WRONLY, 0660)
+		f, err := os.OpenFile(UPLOADFILE+filename, os.O_CREATE|os.O_WRONLY, 0660)
+		if err !=nil {
+			fmt.Println("OpenFile ERROR :",err.Error())
+		}
+		
 		_, err = io.Copy(f, file)
 		if err != nil {
 			fmt.Fprintf(w, "%v", "上传失败")
@@ -119,7 +123,7 @@ func StaticServer(w http.ResponseWriter, r *http.Request) {
 }
 
 func check(name string) bool {
-	ext := []string{".exe", ".js", ".sh"}
+	ext := []string{".exe",".sh"}
 
 	for _, v := range ext {
 		if v == name {
